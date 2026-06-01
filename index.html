@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cancelamento de Contrato | Vegas Vigilância</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Rajdhani',sans-serif;
+background:#050816;
+color:#fff;
+min-height:100vh;
+overflow-x:hidden;
+}
+
+body::before{
+content:'';
+position:fixed;
+width:100%;
+height:100%;
+background:
+radial-gradient(circle at 20% 20%, rgba(0,212,255,.15), transparent 25%),
+radial-gradient(circle at 80% 30%, rgba(123,97,255,.15), transparent 25%),
+radial-gradient(circle at 50% 80%, rgba(0,255,178,.12), transparent 25%);
+z-index:-1;
+}
+
+.container{
+max-width:950px;
+margin:auto;
+padding:40px 20px;
+}
+
+.logo{
+text-align:center;
+margin-bottom:20px;
+}
+
+.logo h1{
+font-family:'Orbitron',sans-serif;
+font-size:2.5rem;
+color:#00d4ff;
+text-shadow:0 0 20px #00d4ff;
+}
+
+.logo p{
+color:#b9c5d4;
+margin-top:10px;
+}
+
+.card{
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(15px);
+border:1px solid rgba(0,212,255,.2);
+border-radius:25px;
+padding:35px;
+box-shadow:
+0 0 30px rgba(0,212,255,.15),
+inset 0 0 20px rgba(255,255,255,.03);
+}
+
+h2{
+font-family:'Orbitron',sans-serif;
+margin-bottom:15px;
+color:#00d4ff;
+}
+
+.section{
+margin-bottom:35px;
+}
+
+label{
+display:block;
+margin-bottom:10px;
+font-size:1.1rem;
+}
+
+input,
+textarea,
+select{
+width:100%;
+padding:15px;
+background:rgba(255,255,255,.08);
+border:1px solid rgba(0,212,255,.2);
+border-radius:12px;
+color:white;
+font-size:1rem;
+outline:none;
+transition:.3s;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+border-color:#00d4ff;
+box-shadow:0 0 15px rgba(0,212,255,.4);
+}
+
+textarea{
+resize:vertical;
+min-height:120px;
+}
+
+.rating{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+}
+
+.rating label{
+cursor:pointer;
+padding:12px 20px;
+border:1px solid rgba(0,212,255,.25);
+border-radius:12px;
+transition:.3s;
+}
+
+.rating label:hover{
+background:#00d4ff22;
+}
+
+.checkbox-group{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:12px;
+}
+
+.checkbox-group label{
+background:rgba(255,255,255,.05);
+padding:12px;
+border-radius:10px;
+cursor:pointer;
+}
+
+.checkbox-group input{
+width:auto;
+margin-right:8px;
+}
+
+.retention{
+background:linear-gradient(
+135deg,
+rgba(0,212,255,.15),
+rgba(123,97,255,.15)
+);
+border:1px solid rgba(0,212,255,.25);
+padding:25px;
+border-radius:18px;
+text-align:center;
+margin-bottom:30px;
+}
+
+.retention h3{
+color:#00ffb2;
+font-family:'Orbitron',sans-serif;
+margin-bottom:10px;
+}
+
+.btns{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+justify-content:center;
+margin-top:30px;
+}
+
+.btn{
+padding:16px 30px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+font-size:1rem;
+font-weight:700;
+transition:.3s;
+text-transform:uppercase;
+letter-spacing:1px;
+}
+
+.btn-primary{
+background:#00d4ff;
+color:#000;
+box-shadow:0 0 20px #00d4ff;
+}
+
+.btn-primary:hover{
+transform:translateY(-3px);
+}
+
+.btn-danger{
+background:#ff2d55;
+color:white;
+box-shadow:0 0 20px #ff2d55;
+}
+
+.btn-danger:hover{
+transform:translateY(-3px);
+}
+
+.progress{
+height:10px;
+background:#111827;
+border-radius:10px;
+overflow:hidden;
+margin-bottom:30px;
+}
+
+.progress span{
+display:block;
+height:100%;
+width:100%;
+background:linear-gradient(90deg,#00d4ff,#7b61ff,#00ffb2);
+animation:shine 4s linear infinite;
+}
+
+@keyframes shine{
+0%{filter:hue-rotate(0deg);}
+100%{filter:hue-rotate(360deg);}
+}
+
+.footer{
+text-align:center;
+margin-top:30px;
+color:#95a1b5;
+font-size:.95rem;
+}
+
+.success{
+display:none;
+margin-top:30px;
+padding:25px;
+background:#00ffb222;
+border:1px solid #00ffb2;
+border-radius:15px;
+text-align:center;
+}
+
+.success h3{
+color:#00ffb2;
+margin-bottom:10px;
+}
+.logo-panel{
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(0,212,255,.25);
+    border-radius:25px;
+    padding:30px;
+    margin-bottom:30px;
+
+    backdrop-filter:blur(15px);
+
+    box-shadow:
+    0 0 25px rgba(0,212,255,.15),
+    inset 0 0 20px rgba(255,255,255,.03);
+}
+
+@media(max-width:768px){
+
+.logo h1{
+font-size:2rem;
+}
+
+.card{
+padding:25px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logo-panel">
+
+    <img src="assets/logo.png"
+         alt="Vegas Vigilância"
+         class="logo-img">
+
+</div>
+<div class="card">
+
+<div class="progress">
+<span></span>
+</div>
+
+<h2>Solicitação de Cancelamento</h2>
+
+<p style="margin-bottom:30px;color:#b9c5d4;">
+Sua opinião é fundamental para que possamos evoluir nossos serviços e oferecer uma experiência cada vez melhor.
+</p>
+
+<div class="section">
+<h2>Grau de Satisfação</h2>
+
+<div class="rating">
+<label><input type="radio" name="nota"> ⭐ Muito Satisfeito</label>
+<label><input type="radio" name="nota"> ⭐⭐⭐⭐ Satisfeito</label>
+<label><input type="radio" name="nota"> ⭐⭐⭐ Regular</label>
+<label><input type="radio" name="nota"> ⭐⭐ Insatisfeito</label>
+<label><input type="radio" name="nota"> ⭐ Muito Insatisfeito</label>
+</div>
+</div>
+
+<div class="section">
+<h2>Motivo do Cancelamento</h2>
+
+<div class="checkbox-group">
+
+<label><input type="checkbox"> Valor da mensalidade</label>
+<label><input type="checkbox"> Mudança de endereço</label>
+<label><input type="checkbox"> Encerramento das atividades</label>
+<label><input type="checkbox"> Troca por concorrente</label>
+<label><input type="checkbox"> Problemas técnicos</label>
+<label><input type="checkbox"> Atendimento</label>
+<label><input type="checkbox"> Não utilizo mais</label>
+<label><input type="checkbox"> Outro motivo</label>
+
+</div>
+</div>
+
+<div class="section">
+<h2>Conte-nos mais</h2>
+
+<textarea placeholder="Descreva detalhadamente o motivo do cancelamento..."></textarea>
+</div>
+
+<div class="retention">
+
+<h3>⚡ Antes de cancelar</h3>
+
+<p>
+Podemos analisar seu contrato e verificar condições especiais,
+ajustes de plano ou melhorias para continuar protegendo você.
+</p>
+
+<br>
+
+<label>
+<input type="radio" name="contato">
+ Quero receber uma proposta personalizada.
+</label>
+
+<label>
+<input type="radio" name="contato">
+ Desejo prosseguir com o cancelamento.
+</label>
+
+</div>
+
+<div class="section">
+
+<h2>Dados do Contrato</h2>
+
+<input type="text" placeholder="Nome Completo">
+
+<br><br>
+
+<input type="text" placeholder="CPF ou CNPJ">
+
+<br><br>
+
+<input type="text" placeholder="Telefone">
+
+<br><br>
+
+<input type="email" placeholder="E-mail">
+
+<br><br>
+
+<input type="text" placeholder="Número do Contrato">
+
+</div>
+
+<div class="section">
+
+<label>
+<input type="checkbox">
+ Declaro que estou ciente dos prazos e condições contratuais para cancelamento.
+</label>
+
+</div>
+
+<div class="btns">
+
+<button class="btn btn-primary">
+Falar com Especialista
+</button>
+
+<button class="btn btn-danger" onclick="enviarCancelamento()">
+Solicitar Cancelamento
+</button>
+
+</div>
+
+<div class="success" id="success">
+
+<h3>✅ Solicitação Recebida</h3>
+
+<p>
+Protocolo:
+<strong>VG-2026-001</strong>
+</p>
+
+<br>
+
+<p>
+Nossa equipe entrará em contato em até 48 horas úteis para concluir o processo.
+</p>
+
+</div>
+
+</div>
+
+<div class="footer">
+© 2026 Vegas Vigilância • Protegendo o que realmente importa.
+</div>
+
+</div>
+
+<script>
+
+function enviarCancelamento(){
+
+document.getElementById("success").style.display = "block";
+
+window.scrollTo({
+top:document.body.scrollHeight,
+behavior:'smooth'
+});
+
+}
+
+</script>
+
+</body>
+</html>
