@@ -3,445 +3,924 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Cancelamento de Contrato | Vegas Vigilância</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box;}
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
+:root{
+  --cyan:#00d4ff;
+  --purple:#7b61ff;
+  --green:#00ffb2;
+  --red:#ff2d55;
+  --bg:#050816;
+  --card-bg:rgba(255,255,255,0.04);
+  --border:rgba(0,212,255,0.2);
 }
+
+html{scroll-behavior:smooth;}
 
 body{
-font-family:'Rajdhani',sans-serif;
-background:#050816;
-color:#fff;
-min-height:100vh;
-overflow-x:hidden;
+  font-family:'Rajdhani',sans-serif;
+  background:var(--bg);
+  color:#fff;
+  min-height:100vh;
+  overflow-x:hidden;
 }
 
-body::before{
-content:'';
-position:fixed;
-width:100%;
-height:100%;
-background:
-radial-gradient(circle at 20% 20%, rgba(0,212,255,.15), transparent 25%),
-radial-gradient(circle at 80% 30%, rgba(123,97,255,.15), transparent 25%),
-radial-gradient(circle at 50% 80%, rgba(0,255,178,.12), transparent 25%);
-z-index:-1;
+/* ── BACKGROUND ── */
+.bg-layer{
+  position:fixed;inset:0;z-index:-2;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 15%, rgba(0,212,255,.12), transparent),
+    radial-gradient(ellipse 50% 60% at 85% 25%, rgba(123,97,255,.14), transparent),
+    radial-gradient(ellipse 40% 50% at 55% 85%, rgba(0,255,178,.10), transparent),
+    #050816;
 }
 
-.container{
-max-width:950px;
-margin:auto;
-padding:40px 20px;
+/* animated grid */
+.grid-layer{
+  position:fixed;inset:0;z-index:-1;
+  background-image:
+    linear-gradient(rgba(0,212,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,.04) 1px, transparent 1px);
+  background-size:50px 50px;
+  animation:gridPulse 8s ease-in-out infinite;
+}
+@keyframes gridPulse{
+  0%,100%{opacity:.5;}
+  50%{opacity:1;}
 }
 
-.logo{
-text-align:center;
-margin-bottom:20px;
+/* floating orbs */
+.orb{
+  position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:-1;animation:float 12s ease-in-out infinite;
+}
+.orb-1{width:400px;height:400px;background:rgba(0,212,255,.07);top:-100px;left:-100px;animation-delay:0s;}
+.orb-2{width:350px;height:350px;background:rgba(123,97,255,.08);bottom:-80px;right:-80px;animation-delay:-4s;}
+.orb-3{width:250px;height:250px;background:rgba(0,255,178,.06);top:50%;left:70%;animation-delay:-8s;}
+@keyframes float{
+  0%,100%{transform:translate(0,0) scale(1);}
+  33%{transform:translate(30px,-20px) scale(1.05);}
+  66%{transform:translate(-20px,30px) scale(.96);}
 }
 
-.logo h1{
-font-family:'Orbitron',sans-serif;
-font-size:2.5rem;
-color:#00d4ff;
-text-shadow:0 0 20px #00d4ff;
+/* ── CONTAINER ── */
+.container{max-width:980px;margin:auto;padding:40px 20px;}
+
+/* ── HEADER ── */
+.header{
+  text-align:center;
+  padding:50px 30px 40px;
+  position:relative;
 }
 
-.logo p{
-color:#b9c5d4;
-margin-top:10px;
+.header-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.3);
+  border-radius:100px;padding:6px 18px;margin-bottom:20px;
+  font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);
+  animation:fadeDown .6s ease both;
+}
+.badge-dot{
+  width:6px;height:6px;background:var(--cyan);border-radius:50%;
+  box-shadow:0 0 8px var(--cyan);animation:blink 1.5s ease infinite;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+.brand{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(2rem,5vw,3.2rem);
+  font-weight:900;
+  background:linear-gradient(135deg,#fff 0%,var(--cyan) 50%,var(--purple) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-shadow:none;
+  animation:fadeDown .6s .1s ease both;
+  letter-spacing:2px;
+}
+.brand-sub{
+  display:block;
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(.8rem,1.5vw,1rem);
+  font-weight:400;letter-spacing:6px;
+  color:rgba(0,212,255,.6);margin-top:6px;
+  animation:fadeDown .6s .2s ease both;
 }
 
+.header-line{
+  width:120px;height:2px;margin:24px auto;
+  background:linear-gradient(90deg,transparent,var(--cyan),var(--purple),transparent);
+  animation:fadeIn .8s .3s ease both;
+}
+
+.header-desc{
+  max-width:520px;margin:0 auto;color:rgba(185,197,212,.8);
+  line-height:1.7;font-size:1.05rem;
+  animation:fadeDown .6s .3s ease both;
+}
+
+@keyframes fadeDown{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:none;}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+/* ── STEP INDICATOR ── */
+.steps{
+  display:flex;justify-content:center;align-items:center;
+  gap:0;margin-bottom:40px;
+  animation:fadeIn .8s .4s ease both;
+}
+.step{
+  display:flex;align-items:center;gap:10px;
+}
+.step-num{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',sans-serif;font-size:.75rem;font-weight:700;
+  border:2px solid var(--border);color:rgba(255,255,255,.4);
+  background:rgba(255,255,255,.04);transition:.4s;
+}
+.step.active .step-num{
+  border-color:var(--cyan);color:var(--cyan);
+  background:rgba(0,212,255,.1);box-shadow:0 0 20px rgba(0,212,255,.3);
+}
+.step.done .step-num{
+  border-color:var(--green);background:rgba(0,255,178,.15);color:var(--green);
+}
+.step-label{font-size:.8rem;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;}
+.step.active .step-label{color:var(--cyan);}
+.step.done .step-label{color:var(--green);}
+.step-line{width:50px;height:1px;background:var(--border);margin:0 12px;}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap{
+  height:4px;background:rgba(255,255,255,.06);
+  border-radius:4px;overflow:hidden;margin-bottom:40px;
+  animation:fadeIn 1s .5s ease both;
+}
+.progress-bar{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--cyan),var(--purple),var(--green));
+  border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 0 12px rgba(0,212,255,.6);
+}
+
+/* ── CARDS ── */
 .card{
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(15px);
-border:1px solid rgba(0,212,255,.2);
-border-radius:25px;
-padding:35px;
-box-shadow:
-0 0 30px rgba(0,212,255,.15),
-inset 0 0 20px rgba(255,255,255,.03);
+  background:var(--card-bg);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:36px;
+  box-shadow:0 0 40px rgba(0,212,255,.08),inset 0 0 30px rgba(255,255,255,.02);
+  margin-bottom:24px;
+  animation:cardIn .6s ease both;
+  transition:border-color .3s,box-shadow .3s;
 }
-
-h2{
-font-family:'Orbitron',sans-serif;
-margin-bottom:15px;
-color:#00d4ff;
+.card:hover{
+  border-color:rgba(0,212,255,.35);
+  box-shadow:0 0 50px rgba(0,212,255,.12),inset 0 0 30px rgba(255,255,255,.03);
 }
+@keyframes cardIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
 
-.section{
-margin-bottom:35px;
+.card-header{
+  display:flex;align-items:center;gap:14px;margin-bottom:28px;
 }
-
-label{
-display:block;
-margin-bottom:10px;
-font-size:1.1rem;
+.card-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.25);
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+  box-shadow:0 0 16px rgba(0,212,255,.2);flex-shrink:0;
 }
-
-input,
-textarea,
-select{
-width:100%;
-padding:15px;
-background:rgba(255,255,255,.08);
-border:1px solid rgba(0,212,255,.2);
-border-radius:12px;
-color:white;
-font-size:1rem;
-outline:none;
-transition:.3s;
+.card-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:1rem;font-weight:700;
+  color:var(--cyan);letter-spacing:1px;
 }
+.card-desc{font-size:.9rem;color:rgba(185,197,212,.7);margin-top:3px;}
 
-input:focus,
-textarea:focus,
-select:focus{
-border-color:#00d4ff;
-box-shadow:0 0 15px rgba(0,212,255,.4);
+/* ── RATING ── */
+.rating-grid{
+  display:flex;gap:12px;flex-wrap:wrap;
 }
-
-textarea{
-resize:vertical;
-min-height:120px;
+.rating-item{
+  flex:1;min-width:140px;
+  background:rgba(255,255,255,.04);
+  border:1.5px solid rgba(0,212,255,.15);
+  border-radius:14px;padding:16px 14px;
+  cursor:pointer;text-align:center;transition:.3s;
+  position:relative;overflow:hidden;
 }
-
-.rating{
-display:flex;
-gap:15px;
-flex-wrap:wrap;
+.rating-item::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  opacity:0;transition:.3s;
 }
-
-.rating label{
-cursor:pointer;
-padding:12px 20px;
-border:1px solid rgba(0,212,255,.25);
-border-radius:12px;
-transition:.3s;
+.rating-item:hover{border-color:rgba(0,212,255,.4);transform:translateY(-2px);}
+.rating-item input{display:none;}
+.rating-item .stars{font-size:1.1rem;display:block;margin-bottom:6px;position:relative;z-index:1;}
+.rating-item .label{font-size:.82rem;color:rgba(185,197,212,.8);position:relative;z-index:1;font-weight:600;}
+.rating-item.selected{
+  border-color:var(--cyan);
+  background:rgba(0,212,255,.12);
+  box-shadow:0 0 20px rgba(0,212,255,.25),inset 0 0 15px rgba(0,212,255,.06);
 }
+.rating-item.selected .label{color:#fff;}
 
-.rating label:hover{
-background:#00d4ff22;
+/* ── CHECKBOXES ── */
+.check-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:10px;
 }
-
-.checkbox-group{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:12px;
+.check-item{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(0,212,255,.12);
+  border-radius:12px;padding:13px 16px;
+  cursor:pointer;transition:.3s;
 }
-
-.checkbox-group label{
-background:rgba(255,255,255,.05);
-padding:12px;
-border-radius:10px;
-cursor:pointer;
+.check-item:hover{border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.06);}
+.check-item input{
+  width:16px;height:16px;accent-color:var(--cyan);cursor:pointer;flex-shrink:0;
 }
-
-.checkbox-group input{
-width:auto;
-margin-right:8px;
+.check-item span{font-size:.92rem;font-weight:500;color:rgba(185,197,212,.9);}
+.check-item:has(input:checked){
+  border-color:var(--cyan);background:rgba(0,212,255,.1);
+  box-shadow:0 0 12px rgba(0,212,255,.15);
 }
+.check-item:has(input:checked) span{color:#fff;}
 
+/* ── INPUTS ── */
+.field{margin-bottom:20px;}
+.field label{
+  display:block;margin-bottom:8px;
+  font-size:.85rem;font-weight:600;
+  color:rgba(185,197,212,.8);letter-spacing:1px;text-transform:uppercase;
+}
+.field .required{color:var(--red);margin-left:3px;}
+
+.input-wrap{position:relative;}
+.input-wrap .ico{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  font-size:1rem;opacity:.5;
+}
+.input-wrap textarea+.ico{top:20px;transform:none;}
+
+input[type=text],input[type=email],input[type=tel],textarea,select{
+  width:100%;padding:15px 18px 15px 46px;
+  background:rgba(255,255,255,.06);
+  border:1.5px solid rgba(0,212,255,.15);
+  border-radius:14px;color:white;
+  font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:500;
+  outline:none;transition:.3s;
+}
+input[type=text]::placeholder,input[type=email]::placeholder,
+input[type=tel]::placeholder,textarea::placeholder{color:rgba(185,197,212,.35);}
+input:focus,textarea:focus,select:focus{
+  border-color:var(--cyan);
+  box-shadow:0 0 20px rgba(0,212,255,.2);
+  background:rgba(0,212,255,.06);
+}
+textarea{resize:vertical;min-height:130px;padding-top:16px;}
+select{padding-left:46px;cursor:pointer;}
+select option{background:#0d1526;color:#fff;}
+
+.fields-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:640px){.fields-row{grid-template-columns:1fr;}}
+
+/* ── RETENTION BOX ── */
 .retention{
-background:linear-gradient(
-135deg,
-rgba(0,212,255,.15),
-rgba(123,97,255,.15)
-);
-border:1px solid rgba(0,212,255,.25);
-padding:25px;
-border-radius:18px;
-text-align:center;
-margin-bottom:30px;
+  background:linear-gradient(135deg,rgba(0,212,255,.1),rgba(123,97,255,.12));
+  border:1px solid rgba(0,212,255,.3);
+  border-radius:20px;padding:30px;margin-bottom:24px;
+  position:relative;overflow:hidden;
+}
+.retention::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,212,255,.04),transparent);
+  pointer-events:none;
+}
+.retention-title{
+  font-family:'Orbitron',sans-serif;
+  color:var(--green);font-size:1rem;
+  margin-bottom:10px;display:flex;align-items:center;gap:10px;
+}
+.retention-text{color:rgba(185,197,212,.85);line-height:1.65;margin-bottom:22px;font-size:.97rem;}
+.retention-options{display:flex;flex-direction:column;gap:10px;}
+.radio-option{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 18px;border-radius:12px;
+  border:1px solid rgba(0,212,255,.15);
+  background:rgba(255,255,255,.04);
+  cursor:pointer;transition:.3s;
+}
+.radio-option:hover{border-color:rgba(0,212,255,.35);background:rgba(0,212,255,.07);}
+.radio-option input{width:16px;height:16px;accent-color:var(--cyan);cursor:pointer;}
+.radio-option span{font-size:.95rem;font-weight:500;}
+.radio-option.accept{border-color:rgba(0,255,178,.2);}
+.radio-option.accept:has(input:checked){
+  border-color:var(--green);background:rgba(0,255,178,.1);
+  box-shadow:0 0 15px rgba(0,255,178,.15);
+}
+.radio-option.cancel-opt:has(input:checked){
+  border-color:var(--red);background:rgba(255,45,85,.08);
+  box-shadow:0 0 15px rgba(255,45,85,.12);
 }
 
-.retention h3{
-color:#00ffb2;
-font-family:'Orbitron',sans-serif;
-margin-bottom:10px;
+/* ── TERMS ── */
+.terms-check{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:18px;border-radius:14px;
+  border:1px solid rgba(0,212,255,.12);
+  background:rgba(255,255,255,.03);cursor:pointer;
+  transition:.3s;margin-bottom:10px;
 }
+.terms-check:hover{border-color:rgba(0,212,255,.3);}
+.terms-check input{
+  width:18px;height:18px;flex-shrink:0;
+  accent-color:var(--cyan);margin-top:2px;cursor:pointer;
+}
+.terms-check span{font-size:.92rem;line-height:1.6;color:rgba(185,197,212,.8);}
+.terms-check:has(input:checked){border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.05);}
 
+/* ── BUTTONS ── */
 .btns{
-display:flex;
-gap:15px;
-flex-wrap:wrap;
-justify-content:center;
-margin-top:30px;
+  display:flex;gap:14px;flex-wrap:wrap;justify-content:center;
+  padding-top:10px;
 }
-
 .btn{
-padding:16px 30px;
-border:none;
-border-radius:12px;
-cursor:pointer;
-font-size:1rem;
-font-weight:700;
-transition:.3s;
-text-transform:uppercase;
-letter-spacing:1px;
+  padding:16px 34px;border:none;border-radius:14px;
+  cursor:pointer;font-family:'Orbitron',sans-serif;
+  font-size:.82rem;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;transition:.3s;
+  position:relative;overflow:hidden;
 }
+.btn::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);
+  opacity:0;transition:.3s;
+}
+.btn:hover::after{opacity:1;}
+.btn:active{transform:scale(.97);}
 
 .btn-primary{
-background:#00d4ff;
-color:#000;
-box-shadow:0 0 20px #00d4ff;
+  background:linear-gradient(135deg,var(--cyan),rgba(0,180,220,1));
+  color:#000;
+  box-shadow:0 0 30px rgba(0,212,255,.4),0 6px 20px rgba(0,0,0,.3);
 }
-
 .btn-primary:hover{
-transform:translateY(-3px);
+  transform:translateY(-3px);
+  box-shadow:0 0 50px rgba(0,212,255,.6),0 10px 30px rgba(0,0,0,.4);
 }
-
 .btn-danger{
-background:#ff2d55;
-color:white;
-box-shadow:0 0 20px #ff2d55;
+  background:linear-gradient(135deg,#ff2d55,#c01437);
+  color:white;
+  box-shadow:0 0 30px rgba(255,45,85,.35),0 6px 20px rgba(0,0,0,.3);
 }
-
 .btn-danger:hover{
-transform:translateY(-3px);
+  transform:translateY(-3px);
+  box-shadow:0 0 50px rgba(255,45,85,.55),0 10px 30px rgba(0,0,0,.4);
+}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;}
+
+/* spinner inside button */
+.spin{
+  display:inline-block;width:14px;height:14px;
+  border:2px solid rgba(0,0,0,.3);
+  border-top-color:#000;border-radius:50%;
+  animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;
+}
+.btn-danger .spin{border-color:rgba(255,255,255,.3);border-top-color:#fff;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── SUCCESS ── */
+.success-screen{
+  display:none;
+  text-align:center;
+  padding:50px 30px;
+}
+.success-screen.show{display:block;animation:fadeIn .7s ease;}
+.success-icon{
+  width:80px;height:80px;border-radius:50%;
+  background:rgba(0,255,178,.12);border:2px solid var(--green);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;margin:0 auto 24px;
+  box-shadow:0 0 40px rgba(0,255,178,.3);
+  animation:popIn .5s .2s cubic-bezier(.68,-.55,.265,1.55) both;
+}
+@keyframes popIn{from{transform:scale(0);}to{transform:scale(1);}}
+.success-title{
+  font-family:'Orbitron',sans-serif;
+  font-size:1.4rem;color:var(--green);margin-bottom:12px;
+}
+.success-text{color:rgba(185,197,212,.85);line-height:1.7;max-width:480px;margin:0 auto;}
+.protocol-box{
+  display:inline-block;
+  background:rgba(0,255,178,.08);border:1px solid rgba(0,255,178,.3);
+  border-radius:12px;padding:14px 28px;margin:22px auto;
+  font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--green);
+  letter-spacing:3px;box-shadow:0 0 20px rgba(0,255,178,.15);
 }
 
-.progress{
-height:10px;
-background:#111827;
-border-radius:10px;
-overflow:hidden;
-margin-bottom:30px;
+/* ── ERROR BOX ── */
+.error-box{
+  display:none;
+  background:rgba(255,45,85,.08);border:1px solid rgba(255,45,85,.3);
+  border-radius:14px;padding:16px 20px;margin-top:16px;
+  color:#ff6b8a;font-size:.92rem;text-align:center;animation:fadeIn .4s ease;
 }
+.error-box.show{display:block;}
 
-.progress span{
-display:block;
-height:100%;
-width:100%;
-background:linear-gradient(90deg,#00d4ff,#7b61ff,#00ffb2);
-animation:shine 4s linear infinite;
-}
-
-@keyframes shine{
-0%{filter:hue-rotate(0deg);}
-100%{filter:hue-rotate(360deg);}
-}
-
+/* ── FOOTER ── */
 .footer{
-text-align:center;
-margin-top:30px;
-color:#95a1b5;
-font-size:.95rem;
+  text-align:center;margin-top:32px;padding:20px;
+  color:rgba(149,161,181,.5);font-size:.85rem;
+  border-top:1px solid rgba(0,212,255,.08);
 }
 
-.success{
-display:none;
-margin-top:30px;
-padding:25px;
-background:#00ffb222;
-border:1px solid #00ffb2;
-border-radius:15px;
-text-align:center;
+/* ── TOOLTIP ── */
+.tooltip{
+  position:relative;display:inline-block;margin-left:6px;
+  cursor:help;color:rgba(0,212,255,.6);
 }
-
-.success h3{
-color:#00ffb2;
-margin-bottom:10px;
+.tooltip .tip{
+  visibility:hidden;width:220px;
+  background:#0d1526;color:rgba(185,197,212,.9);
+  border:1px solid var(--border);border-radius:10px;
+  padding:10px 14px;font-size:.8rem;line-height:1.5;
+  position:absolute;bottom:130%;left:50%;transform:translateX(-50%);
+  z-index:10;opacity:0;transition:.2s;pointer-events:none;
 }
-.logo-panel{
-    background:rgba(255,255,255,.03);
-    border:1px solid rgba(0,212,255,.25);
-    border-radius:25px;
-    padding:30px;
-    margin-bottom:30px;
+.tooltip:hover .tip{visibility:visible;opacity:1;}
 
-    backdrop-filter:blur(15px);
-
-    box-shadow:
-    0 0 25px rgba(0,212,255,.15),
-    inset 0 0 20px rgba(255,255,255,.03);
+@media(max-width:640px){
+  .card{padding:24px 18px;}
+  .brand{font-size:1.8rem;}
+  .rating-grid{flex-direction:column;}
 }
-
-@media(max-width:768px){
-
-.logo h1{
-font-size:2rem;
-}
-
-.card{
-padding:25px;
-}
-
-}
-
 </style>
 </head>
 
 <body>
 
+<div class="bg-layer"></div>
+<div class="grid-layer"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
 <div class="container">
 
-<div class="logo-panel">
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-badge">
+      <span class="badge-dot"></span>
+      Sistema de Atendimento
+    </div>
+    <h1 class="brand">
+      <img src="./assets/logo.png"">
+      <span class="brand-sub">Protegendo o que realmente importa</span>
+    </h1>
+    <div class="header-line"></div>
+    <p class="header-desc">
+      Lamentamos saber que deseja cancelar. Preencha as informações abaixo
+      e nossa equipe especializada cuidará de tudo com agilidade e transparência.
+    </p>
+  </div>
 
-    <img src="assets/logo.png"
-         alt="Vegas Vigilância"
-         class="logo-img">
+  <!-- STEPS -->
+  <div class="steps">
+    <div class="step active" id="step1">
+      <div class="step-num">01</div>
+      <div class="step-label">Avaliação</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step" id="step2">
+      <div class="step-num">02</div>
+      <div class="step-label">Motivo</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step" id="step3">
+      <div class="step-num">03</div>
+      <div class="step-label">Dados</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step" id="step4">
+      <div class="step-num">04</div>
+      <div class="step-label">Conclusão</div>
+    </div>
+  </div>
 
-</div>
-<div class="card">
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
 
-<div class="progress">
-<span></span>
-</div>
+  <!-- FORM -->
+  <div id="formWrapper">
 
-<h2>Solicitação de Cancelamento</h2>
+    <!-- CARD 1: SATISFAÇÃO -->
+    <div class="card" style="animation-delay:.1s">
+      <div class="card-header">
+        <div class="card-icon">⭐</div>
+        <div>
+          <div class="card-title">Grau de Satisfação</div>
+          <div class="card-desc">Como você avalia nossos serviços durante o período de contrato?</div>
+        </div>
+      </div>
+      <div class="rating-grid" id="ratingGrid">
+        <div class="rating-item" data-val="5">
+          <input type="radio" name="nota" value="5">
+          <span class="stars">😍</span>
+          <span class="label">Muito Satisfeito</span>
+        </div>
+        <div class="rating-item" data-val="4">
+          <input type="radio" name="nota" value="4">
+          <span class="stars">😊</span>
+          <span class="label">Satisfeito</span>
+        </div>
+        <div class="rating-item" data-val="3">
+          <input type="radio" name="nota" value="3">
+          <span class="stars">😐</span>
+          <span class="label">Regular</span>
+        </div>
+        <div class="rating-item" data-val="2">
+          <input type="radio" name="nota" value="2">
+          <span class="stars">😕</span>
+          <span class="label">Insatisfeito</span>
+        </div>
+        <div class="rating-item" data-val="1">
+          <input type="radio" name="nota" value="1">
+          <span class="stars">😠</span>
+          <span class="label">Muito Insatisfeito</span>
+        </div>
+      </div>
+    </div>
 
-<p style="margin-bottom:30px;color:#b9c5d4;">
-Sua opinião é fundamental para que possamos evoluir nossos serviços e oferecer uma experiência cada vez melhor.
-</p>
+    <!-- CARD 2: MOTIVOS -->
+    <div class="card" style="animation-delay:.2s">
+      <div class="card-header">
+        <div class="card-icon">📋</div>
+        <div>
+          <div class="card-title">Motivo do Cancelamento</div>
+          <div class="card-desc">Selecione todos os motivos que se aplicam ao seu caso.</div>
+        </div>
+      </div>
+      <div class="check-grid">
+        <label class="check-item"><input type="checkbox" value="Valor da mensalidade"><span>💰 Valor da mensalidade</span></label>
+        <label class="check-item"><input type="checkbox" value="Mudança de endereço"><span>🏠 Mudança de endereço</span></label>
+        <label class="check-item"><input type="checkbox" value="Encerramento das atividades"><span>🔒 Encerramento das atividades</span></label>
+        <label class="check-item"><input type="checkbox" value="Troca por concorrente"><span>🔄 Troca por concorrente</span></label>
+        <label class="check-item"><input type="checkbox" value="Problemas técnicos"><span>🔧 Problemas técnicos</span></label>
+        <label class="check-item"><input type="checkbox" value="Atendimento insatisfatório"><span>📞 Atendimento insatisfatório</span></label>
+        <label class="check-item"><input type="checkbox" value="Não utilizo mais"><span>📦 Não utilizo mais</span></label>
+        <label class="check-item"><input type="checkbox" value="Outro motivo"><span>✏️ Outro motivo</span></label>
+      </div>
+    </div>
 
-<div class="section">
-<h2>Grau de Satisfação</h2>
+    <!-- CARD 3: DETALHES -->
+    <div class="card" style="animation-delay:.3s">
+      <div class="card-header">
+        <div class="card-icon">💬</div>
+        <div>
+          <div class="card-title">Conta-nos Mais</div>
+          <div class="card-desc">Sua mensagem é importante para melhorarmos nossos serviços.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Descreva o motivo <span class="tooltip">ℹ️<span class="tip">Quanto mais detalhes você fornecer, melhor poderemos entender sua situação e oferecer soluções.</span></span></label>
+        <div class="input-wrap">
+          <span class="ico">📝</span>
+          <textarea id="descricao" placeholder="Descreva detalhadamente o motivo do cancelamento..."></textarea>
+        </div>
+      </div>
+    </div>
 
-<div class="rating">
-<label><input type="radio" name="nota"> ⭐ Muito Satisfeito</label>
-<label><input type="radio" name="nota"> ⭐⭐⭐⭐ Satisfeito</label>
-<label><input type="radio" name="nota"> ⭐⭐⭐ Regular</label>
-<label><input type="radio" name="nota"> ⭐⭐ Insatisfeito</label>
-<label><input type="radio" name="nota"> ⭐ Muito Insatisfeito</label>
-</div>
-</div>
+    <!-- RETENTION -->
+    <div class="retention">
+      <div class="retention-title">⚡ Antes de Cancelar — Temos uma Proposta Para Você</div>
+      <p class="retention-text">
+        Antes de confirmar o cancelamento, nossa equipe pode analisar seu contrato
+        e apresentar condições especiais, ajuste de plano ou benefícios exclusivos
+        para clientes de renovação. Sem compromisso, apenas uma conversa.
+      </p>
+      <div class="retention-options">
+        <label class="radio-option accept">
+          <input type="radio" name="decisao" value="proposta" id="radioAceita">
+          <span>✅ Quero receber uma proposta personalizada antes de decidir</span>
+        </label>
+        <label class="radio-option cancel-opt">
+          <input type="radio" name="decisao" value="cancelar" id="radioCancela">
+          <span>❌ Desejo prosseguir com o cancelamento</span>
+        </label>
+      </div>
+    </div>
 
-<div class="section">
-<h2>Motivo do Cancelamento</h2>
+    <!-- CARD 4: DADOS -->
+    <div class="card" style="animation-delay:.4s">
+      <div class="card-header">
+        <div class="card-icon">👤</div>
+        <div>
+          <div class="card-title">Dados do Contrato</div>
+          <div class="card-desc">Preencha seus dados para localizarmos seu cadastro.</div>
+        </div>
+      </div>
 
-<div class="checkbox-group">
+      <div class="fields-row">
+        <div class="field">
+          <label>Nome Completo <span class="required">*</span></label>
+          <div class="input-wrap">
+            <span class="ico">👤</span>
+            <input type="text" id="nome" placeholder="Seu nome completo" required>
+          </div>
+        </div>
+        <div class="field">
+          <label>CPF ou CNPJ <span class="required">*</span></label>
+          <div class="input-wrap">
+            <span class="ico">🪪</span>
+            <input type="text" id="cpf" placeholder="000.000.000-00">
+          </div>
+        </div>
+      </div>
 
-<label><input type="checkbox"> Valor da mensalidade</label>
-<label><input type="checkbox"> Mudança de endereço</label>
-<label><input type="checkbox"> Encerramento das atividades</label>
-<label><input type="checkbox"> Troca por concorrente</label>
-<label><input type="checkbox"> Problemas técnicos</label>
-<label><input type="checkbox"> Atendimento</label>
-<label><input type="checkbox"> Não utilizo mais</label>
-<label><input type="checkbox"> Outro motivo</label>
+      <div class="fields-row">
+        <div class="field">
+          <label>Telefone <span class="required">*</span></label>
+          <div class="input-wrap">
+            <span class="ico">📱</span>
+            <input type="tel" id="telefone" placeholder="(00) 00000-0000">
+          </div>
+        </div>
+        <div class="field">
+          <label>E-mail <span class="required">*</span></label>
+          <div class="input-wrap">
+            <span class="ico">✉️</span>
+            <input type="email" id="email" placeholder="seuemail@exemplo.com">
+          </div>
+        </div>
+      </div>
 
-</div>
-</div>
+      <div class="field">
+        <label>Número do Contrato</label>
+        <div class="input-wrap">
+          <span class="ico">📄</span>
+          <input type="text" id="contrato" placeholder="Ex.: VG-2024-00123">
+        </div>
+      </div>
+    </div>
 
-<div class="section">
-<h2>Conte-nos mais</h2>
+    <!-- TERMOS -->
+    <div class="card" style="animation-delay:.5s">
+      <label class="terms-check" id="termsLabel">
+        <input type="checkbox" id="termos">
+        <span>
+          Declaro que estou ciente dos <strong>prazos e condições contratuais</strong> para
+          cancelamento, incluindo eventuais multas rescisórias previstas em contrato,
+          e que as informações fornecidas são verdadeiras.
+        </span>
+      </label>
+    </div>
 
-<textarea placeholder="Descreva detalhadamente o motivo do cancelamento..."></textarea>
-</div>
+    <!-- AÇÕES -->
+    <div class="btns">
+      <button class="btn btn-primary" onclick="falarEspecialista()">
+        💬 Falar com Especialista
+      </button>
+      <button class="btn btn-danger" id="btnCancelar" onclick="enviarCancelamento()">
+        🚫 Solicitar Cancelamento
+      </button>
+    </div>
 
-<div class="retention">
+    <div class="error-box" id="errorBox">
+      ⚠️ <span id="errorMsg">Preencha todos os campos obrigatórios antes de enviar.</span>
+    </div>
 
-<h3>⚡ Antes de cancelar</h3>
+  </div><!-- /formWrapper -->
 
-<p>
-Podemos analisar seu contrato e verificar condições especiais,
-ajustes de plano ou melhorias para continuar protegendo você.
-</p>
+  <!-- SUCCESS -->
+  <div class="success-screen card" id="successScreen">
+    <div class="success-icon">✅</div>
+    <div class="success-title">Solicitação Recebida com Sucesso!</div>
+    <div class="protocol-box" id="protocolNum">VG-2026-001</div>
+    <p class="success-text">
+      Sua solicitação foi enviada para nossa equipe em
+      <strong style="color:var(--cyan)">sac@vegasvigilancia.com.br</strong>.<br><br>
+      Um de nossos especialistas entrará em contato em até
+      <strong>48 horas úteis</strong> para concluir o processo e orientá-lo sobre
+      os próximos passos.
+    </p>
+  </div>
 
-<br>
+  <div class="footer">
+    © 2026 Vegas Vigilância &nbsp;•&nbsp; CNPJ: 00.000.000/0001-00 &nbsp;•&nbsp;
+    sac@vegasvigilancia.com.br &nbsp;•&nbsp; Todos os direitos reservados.
+  </div>
 
-<label>
-<input type="radio" name="contato">
- Quero receber uma proposta personalizada.
-</label>
+</div><!-- /container -->
 
-<label>
-<input type="radio" name="contato">
- Desejo prosseguir com o cancelamento.
-</label>
-
-</div>
-
-<div class="section">
-
-<h2>Dados do Contrato</h2>
-
-<input type="text" placeholder="Nome Completo">
-
-<br><br>
-
-<input type="text" placeholder="CPF ou CNPJ">
-
-<br><br>
-
-<input type="text" placeholder="Telefone">
-
-<br><br>
-
-<input type="email" placeholder="E-mail">
-
-<br><br>
-
-<input type="text" placeholder="Número do Contrato">
-
-</div>
-
-<div class="section">
-
-<label>
-<input type="checkbox">
- Declaro que estou ciente dos prazos e condições contratuais para cancelamento.
-</label>
-
-</div>
-
-<div class="btns">
-
-<button class="btn btn-primary">
-Falar com Especialista
-</button>
-
-<button class="btn btn-danger" onclick="enviarCancelamento()">
-Solicitar Cancelamento
-</button>
-
-</div>
-
-<div class="success" id="success">
-
-<h3>✅ Solicitação Recebida</h3>
-
-<p>
-Protocolo:
-<strong>VG-2026-001</strong>
-</p>
-
-<br>
-
-<p>
-Nossa equipe entrará em contato em até 48 horas úteis para concluir o processo.
-</p>
-
-</div>
-
-</div>
-
-<div class="footer">
-© 2026 Vegas Vigilância • Protegendo o que realmente importa.
-</div>
-
-</div>
-
+<!-- ============================================================
+     EMAILJS — configure suas chaves abaixo
+     1. Crie conta grátis em https://www.emailjs.com
+     2. Adicione um Email Service (Gmail, Outlook, etc.)
+     3. Crie um Email Template com as variáveis {{nome}}, {{email}}, etc.
+     4. Substitua PUBLIC_KEY, SERVICE_ID e TEMPLATE_ID abaixo
+     ============================================================ -->
 <script>
+// ── EMAILJS CONFIG ──────────────────────────────────────────────
+const EJ_PUBLIC_KEY  = 'SUA_PUBLIC_KEY_AQUI';   // Dashboard → Account → Public Key
+const EJ_SERVICE_ID  = 'SEU_SERVICE_ID_AQUI';   // Email Services → Service ID
+const EJ_TEMPLATE_ID = 'SEU_TEMPLATE_ID_AQUI';  // Email Templates → Template ID
+// ────────────────────────────────────────────────────────────────
 
-function enviarCancelamento(){
+// init EmailJS
+emailjs.init({ publicKey: EJ_PUBLIC_KEY });
 
-document.getElementById("success").style.display = "block";
+// ── PROGRESS & STEPS ────────────────────────────────────────────
+function updateProgress(){
+  const fields = ['nome','email','telefone','descricao'];
+  let filled = 0;
 
-window.scrollTo({
-top:document.body.scrollHeight,
-behavior:'smooth'
-});
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if(el && el.value.trim()) filled++;
+  });
 
+  const hasRating   = !!document.querySelector('.rating-item.selected');
+  const hasDecisao  = !!document.querySelector('input[name="decisao"]:checked');
+  const hasTermos   = document.getElementById('termos').checked;
+
+  if(hasRating)  filled++;
+  if(hasDecisao) filled++;
+  if(hasTermos)  filled++;
+
+  const total = fields.length + 3;
+  const pct   = Math.round((filled / total) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+
+  // steps
+  ['step1','step2','step3','step4'].forEach(s => {
+    document.getElementById(s).classList.remove('active','done');
+  });
+
+  if(pct < 25)       { mark('step1','active'); }
+  else if(pct < 50)  { mark('step1','done'); mark('step2','active'); }
+  else if(pct < 80)  { mark('step1','done'); mark('step2','done'); mark('step3','active'); }
+  else               { mark('step1','done'); mark('step2','done'); mark('step3','done'); mark('step4','active'); }
 }
 
+function mark(id, cls){ document.getElementById(id).classList.add(cls); }
+
+// rating click
+document.querySelectorAll('.rating-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.rating-item').forEach(i => i.classList.remove('selected'));
+    item.classList.add('selected');
+    item.querySelector('input').checked = true;
+    updateProgress();
+  });
+});
+
+// live progress on any input change
+document.addEventListener('input',  updateProgress);
+document.addEventListener('change', updateProgress);
+
+// ── GERAR PROTOCOLO ─────────────────────────────────────────────
+function gerarProtocolo(){
+  const now  = new Date();
+  const ano  = now.getFullYear();
+  const rand = String(Math.floor(Math.random() * 90000) + 10000);
+  return `VG-${ano}-${rand}`;
+}
+
+// ── VALIDAÇÃO ───────────────────────────────────────────────────
+function validar(){
+  const nome     = document.getElementById('nome').value.trim();
+  const email    = document.getElementById('email').value.trim();
+  const telefone = document.getElementById('telefone').value.trim();
+  const termos   = document.getElementById('termos').checked;
+  const decisao  = document.querySelector('input[name="decisao"]:checked');
+
+  if(!nome){
+    mostrarErro('Informe seu nome completo.');
+    document.getElementById('nome').focus();
+    return false;
+  }
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    mostrarErro('Informe um e-mail válido.');
+    document.getElementById('email').focus();
+    return false;
+  }
+  if(!telefone){
+    mostrarErro('Informe um telefone para contato.');
+    document.getElementById('telefone').focus();
+    return false;
+  }
+  if(!decisao){
+    mostrarErro('Selecione uma das opções na seção "Antes de Cancelar".');
+    return false;
+  }
+  if(!termos){
+    mostrarErro('Confirme que está ciente dos termos contratuais.');
+    document.getElementById('termos').focus();
+    return false;
+  }
+  return true;
+}
+
+function mostrarErro(msg){
+  const box = document.getElementById('errorBox');
+  document.getElementById('errorMsg').textContent = msg;
+  box.classList.add('show');
+  setTimeout(() => box.classList.remove('show'), 5000);
+}
+
+// ── MONTAR PAYLOAD DO EMAIL ──────────────────────────────────────
+function montarPayload(protocolo){
+  const nota     = document.querySelector('.rating-item.selected')?.querySelector('.label')?.textContent || 'Não informado';
+  const motivos  = [...document.querySelectorAll('.check-item input:checked')].map(i => i.value).join(', ') || 'Não informado';
+  const descricao= document.getElementById('descricao').value.trim() || 'Não informado';
+  const decisao  = document.querySelector('input[name="decisao"]:checked')?.value === 'proposta'
+                   ? 'Deseja receber proposta personalizada'
+                   : 'Deseja prosseguir com cancelamento';
+
+  return {
+    to_email   : 'sac@vegasvigilancia.com.br',
+    protocolo  : protocolo,
+    nome       : document.getElementById('nome').value.trim(),
+    email      : document.getElementById('email').value.trim(),
+    telefone   : document.getElementById('telefone').value.trim(),
+    cpf        : document.getElementById('cpf').value.trim() || 'Não informado',
+    contrato   : document.getElementById('contrato').value.trim() || 'Não informado',
+    nota       : nota,
+    motivos    : motivos,
+    descricao  : descricao,
+    decisao    : decisao,
+    data_hora  : new Date().toLocaleString('pt-BR'),
+  };
+}
+
+// ── ENVIAR CANCELAMENTO ─────────────────────────────────────────
+async function enviarCancelamento(){
+  if(!validar()) return;
+
+  const btn = document.getElementById('btnCancelar');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Enviando...';
+
+  const protocolo = gerarProtocolo();
+  const payload   = montarPayload(protocolo);
+
+  try {
+    await emailjs.send(EJ_SERVICE_ID, EJ_TEMPLATE_ID, payload);
+    mostrarSucesso(protocolo);
+  } catch(err){
+    console.error('EmailJS error:', err);
+
+    // fallback: mailto
+    const corpo = encodeURIComponent(
+      `SOLICITAÇÃO DE CANCELAMENTO\n`+
+      `Protocolo: ${protocolo}\n`+
+      `Nome: ${payload.nome}\n`+
+      `E-mail: ${payload.email}\n`+
+      `Telefone: ${payload.telefone}\n`+
+      `CPF/CNPJ: ${payload.cpf}\n`+
+      `Contrato: ${payload.contrato}\n`+
+      `Satisfação: ${payload.nota}\n`+
+      `Motivos: ${payload.motivos}\n`+
+      `Decisão: ${payload.decisao}\n`+
+      `Descrição: ${payload.descricao}\n`+
+      `Data/Hora: ${payload.data_hora}`
+    );
+    window.location.href =
+      `mailto:sac@vegasvigilancia.com.br`+
+      `?subject=Cancelamento%20${encodeURIComponent(protocolo)}`+
+      `&body=${corpo}`;
+
+    mostrarSucesso(protocolo);
+  }
+}
+
+function mostrarSucesso(protocolo){
+  document.getElementById('protocolNum').textContent = protocolo;
+  document.getElementById('formWrapper').style.display = 'none';
+  const sc = document.getElementById('successScreen');
+  sc.style.display = 'block';
+  sc.classList.add('show');
+  document.getElementById('progressBar').style.width = '100%';
+  ['step1','step2','step3'].forEach(s => mark(s,'done'));
+  mark('step4','active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── ESPECIALISTA ────────────────────────────────────────────────
+function falarEspecialista(){
+  window.open('https://wa.me/55?text=Olá!%20Gostaria%20de%20falar%20com%20um%20especialista%20da%20Vegas%20Vigilância.','_blank');
+}
+
+// init progress
+updateProgress();
 </script>
 
 </body>
