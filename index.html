@@ -456,8 +456,7 @@ select option{background:#0d1526;color:#fff;}
 .tooltip:hover .tip{visibility:visible;opacity:1;}
 
 .header img {
-  width: 100%;
-  max-width: 500px;
+  width: 500px;
   display: block;
   margin: 0 auto;
 }
@@ -708,10 +707,15 @@ select option{background:#0d1526;color:#fff;}
       <strong>48 horas úteis</strong> para concluir o processo e orientá-lo sobre
       os próximos passos.
     </p>
+    <div style="margin-top:28px;">
+      <button class="btn btn-primary" onclick="gerarPDF()" style="font-size:.78rem;">
+        📄 Baixar Comprovante PDF
+      </button>
+    </div>
   </div>
 
   <div class="footer">
-    © 2026 Vegas Vigilância &nbsp;•&nbsp; CNPJ: 29.890.721/0001-04 &nbsp;•&nbsp;
+    © 2026 Vegas Vigilância &nbsp;•&nbsp; CNPJ: 00.000.000/0001-00 &nbsp;•&nbsp;
     sac@vegasvigilancia.com.br &nbsp;•&nbsp; Todos os direitos reservados.
   </div>
 
@@ -720,7 +724,7 @@ select option{background:#0d1526;color:#fff;}
 <script>
 // ── GOOGLE SHEETS CONFIG ─────────────────────────────────────────
 // Cole aqui a URL gerada pelo Apps Script após publicar como Web App:
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGtOiik1fcOZ3GFdZ6YDiaujXpEDX1F0Q-yCQirJ2l3gCCs-HTaGae_B2Us6wy7tgadw/exec';
+const APPS_SCRIPT_URL = 'SUA_URL_DO_APPS_SCRIPT_AQUI';
 // ─────────────────────────────────────────────────────────────────
 
 const WHATSAPP_NUMBER = '5524998235101';
@@ -873,6 +877,7 @@ async function enviarCancelamento(){
   }
 
   mostrarSucesso(protocolo);
+  _lastPayload = payload;
 
   // Se cliente quer proposta → abre WhatsApp
   if(decisaoVal === 'proposta'){
@@ -897,6 +902,109 @@ function mostrarSucesso(protocolo){
   ['step1','step2','step3'].forEach(s => mark(s,'done'));
   mark('step4','active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── GERAR PDF (comprovante) ─────────────────────────────────────
+let _lastPayload = null; // guarda dados para o PDF
+
+function gerarPDF(){
+  const p = _lastPayload;
+  if(!p) return;
+
+  const decisaoIcone = p.decisao.includes('proposta') ? '✅ Quer receber proposta' : '❌ Prosseguir com cancelamento';
+
+  const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Comprovante ${p.protocolo}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Rajdhani',Arial,sans-serif;background:#fff;color:#111;padding:40px;}
+  .header{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #050816;padding-bottom:18px;margin-bottom:28px;}
+  .logo-text{font-size:26px;font-weight:700;letter-spacing:3px;color:#050816;}
+  .logo-sub{font-size:11px;letter-spacing:4px;color:#555;margin-top:3px;}
+  .badge{background:#050816;color:#00d4ff;padding:6px 16px;border-radius:6px;font-size:11px;letter-spacing:2px;text-align:right;}
+  .badge span{display:block;font-size:18px;font-weight:700;color:#fff;margin-top:2px;letter-spacing:3px;}
+  h2{font-size:15px;letter-spacing:2px;text-transform:uppercase;color:#050816;margin-bottom:16px;padding-bottom:6px;border-bottom:1px solid #ddd;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
+  .field{background:#f7f8fa;border-left:3px solid #00d4ff;padding:10px 14px;border-radius:4px;}
+  .field-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#888;margin-bottom:3px;}
+  .field-value{font-size:14px;font-weight:600;color:#111;}
+  .full{grid-column:1/-1;}
+  .decisao{background:#e8faf4;border-left:3px solid #00b87c;padding:12px 16px;border-radius:4px;font-size:14px;font-weight:600;margin-bottom:24px;}
+  .footer{margin-top:36px;border-top:1px solid #ddd;padding-top:16px;font-size:11px;color:#888;text-align:center;line-height:1.8;}
+  .stamp{display:inline-block;border:2px solid #00b87c;color:#00b87c;padding:6px 18px;border-radius:6px;font-size:12px;font-weight:700;letter-spacing:2px;margin-bottom:16px;}
+  @media print{body{padding:20px;}button{display:none!important;}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <div class="logo-text">VEGAS</div>
+    <div class="logo-sub">VIGILÂNCIA E SEGURANÇA</div>
+  </div>
+  <div class="badge">
+    PROTOCOLO
+    <span>${p.protocolo}</span>
+  </div>
+</div>
+
+<div class="stamp">✅ SOLICITAÇÃO REGISTRADA</div>
+
+<h2>📋 Dados do Solicitante</h2>
+<div class="grid">
+  <div class="field">
+    <div class="field-label">Nome Completo</div>
+    <div class="field-value">${p.nome}</div>
+  </div>
+  <div class="field">
+    <div class="field-label">CPF / CNPJ</div>
+    <div class="field-value">${p.cpf}</div>
+  </div>
+  <div class="field">
+    <div class="field-label">Telefone</div>
+    <div class="field-value">${p.telefone}</div>
+  </div>
+  <div class="field">
+    <div class="field-label">E-mail</div>
+    <div class="field-value">${p.email}</div>
+  </div>
+  <div class="field">
+    <div class="field-label">Data / Hora</div>
+    <div class="field-value">${p.data_hora}</div>
+  </div>
+  <div class="field">
+    <div class="field-label">Grau de Satisfação</div>
+    <div class="field-value">${p.nota}</div>
+  </div>
+  <div class="field full">
+    <div class="field-label">Motivos do Cancelamento</div>
+    <div class="field-value">${p.motivos}</div>
+  </div>
+  <div class="field full">
+    <div class="field-label">Descrição</div>
+    <div class="field-value">${p.descricao}</div>
+  </div>
+</div>
+
+<h2>⚡ Decisão do Cliente</h2>
+<div class="decisao">${decisaoIcone}</div>
+
+<div class="footer">
+  © 2026 Vegas Vigilância &nbsp;•&nbsp; CNPJ: 00.000.000/0001-00 &nbsp;•&nbsp; sac@vegasvigilancia.com.br<br>
+  Nossa equipe entrará em contato em até <strong>48 horas úteis</strong>.<br>
+  Guarde este comprovante com o número de protocolo: <strong>${p.protocolo}</strong>
+</div>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank', 'width=800,height=900');
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(() => win.print(), 600);
 }
 
 // ── ESPECIALISTA ────────────────────────────────────────────────
