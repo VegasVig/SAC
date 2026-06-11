@@ -863,7 +863,7 @@ async function enviarCancelamento(){
   try {
     // Envia para Google Sheets
     const params = new URLSearchParams(payload);
-    await fetch('https://script.google.com/macros/s/AKfycbwdu1u05Wr9CYFQnwsBmckTb-NV1HuvZKD9ZVZM8S_6p7PTZ_juGX5z9eoB8VSnncwx5w/exec', {
+    await fetch('https://script.google.com/macros/s/AKfycbzGtOiik1fcOZ3GFdZ6YDiaujXpEDX1F0Q-yCQirJ2l3gCCs-HTaGae_B2Us6wy7tgadw/exec', {
       method: 'POST',
       body: params,
       mode: 'no-cors'
