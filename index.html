@@ -6,17 +6,17 @@
 <title>Cancelamento de Contrato | Vegas Vigilância</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 
 :root{
-  --cyan:#00d4ff;
-  --purple:#7b61ff;
-  --green:#00ffb2;
+  --cyan:#C0C0C0;
+  --purple:#808080;
+  --green:#E5E5E5;
   --red:#ff2d55;
-  --bg:#050816;
+  --bg:#000000;
   --card-bg:rgba(255,255,255,0.04);
   --border:rgba(0,212,255,0.2);
 }
@@ -661,20 +661,12 @@ select option{background:#0d1526;color:#fff;}
           </div>
         </div>
       </div>
-
-      <div class="field">
-        <label>Número do Contrato</label>
-        <div class="input-wrap">
-          <span class="ico">📄</span>
-          <input type="text" id="contrato" placeholder="Ex.: VG-2024-00123">
-        </div>
-      </div>
-    </div>
+</div>
 
     <!-- TERMOS -->
     <div class="card" style="animation-delay:.5s">
       <label class="terms-check" id="termsLabel">
-        <input type="checkbox" id="termos">
+        <input type="checkbox" id="termos" required>
         <span>
           Declaro que estou ciente dos <strong>prazos e condições contratuais</strong> para
           cancelamento, incluindo eventuais multas rescisórias previstas em contrato,
@@ -705,7 +697,7 @@ select option{background:#0d1526;color:#fff;}
     <div class="success-title">Solicitação Recebida com Sucesso!</div>
     <div class="protocol-box" id="protocolNum">VG-2026-001</div>
     <p class="success-text">
-      Sua solicitação foi enviada para nossa equipe em
+      Sua solicitação foi registrada em nosso sistema.
       <strong style="color:var(--cyan)">sac@vegasvigilancia.com.br</strong>.<br><br>
       Um de nossos especialistas entrará em contato em até
       <strong>48 horas úteis</strong> para concluir o processo e orientá-lo sobre
@@ -728,15 +720,6 @@ select option{background:#0d1526;color:#fff;}
      4. Substitua PUBLIC_KEY, SERVICE_ID e TEMPLATE_ID abaixo
      ============================================================ -->
 <script>
-// ── EMAILJS CONFIG ──────────────────────────────────────────────
-const EJ_PUBLIC_KEY  = 'SUA_PUBLIC_KEY_AQUI';   // Dashboard → Account → Public Key
-const EJ_SERVICE_ID  = 'SEU_SERVICE_ID_AQUI';   // Email Services → Service ID
-const EJ_TEMPLATE_ID = 'SEU_TEMPLATE_ID_AQUI';  // Email Templates → Template ID
-// ────────────────────────────────────────────────────────────────
-
-// init EmailJS
-emailjs.init({ publicKey: EJ_PUBLIC_KEY });
-
 // ── PROGRESS & STEPS ────────────────────────────────────────────
 function updateProgress(){
   const fields = ['nome','email','telefone','descricao'];
@@ -852,8 +835,7 @@ function montarPayload(protocolo){
     email      : document.getElementById('email').value.trim(),
     telefone   : document.getElementById('telefone').value.trim(),
     cpf        : document.getElementById('cpf').value.trim() || 'Não informado',
-    contrato   : document.getElementById('contrato').value.trim() || 'Não informado',
-    nota       : nota,
+        satisfacao : nota,
     motivos    : motivos,
     descricao  : descricao,
     decisao    : decisao,
@@ -865,6 +847,12 @@ function montarPayload(protocolo){
 async function enviarCancelamento(){
   if(!validar()) return;
 
+  const decisao = document.querySelector('input[name="decisao"]:checked')?.value;
+  if(decisao === 'proposta'){
+    window.open('https://wa.me/5524998235101?text=Olá! Gostaria de receber uma proposta personalizada da Vegas Vigilância.','_blank');
+    return;
+  }
+
   const btn = document.getElementById('btnCancelar');
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span> Enviando...';
@@ -873,32 +861,18 @@ async function enviarCancelamento(){
   const payload   = montarPayload(protocolo);
 
   try {
-    await emailjs.send(EJ_SERVICE_ID, EJ_TEMPLATE_ID, payload);
+    const resp = await fetch('https://script.google.com/macros/s/AKfycbyaGyqk-ZfwfgfASrBkdIP_wcKzVZjmI2genRtzUoM036x2dVE_2i6LuPPRP-pEtOqiEg/exec',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+
+    if(!resp.ok) throw new Error('Falha ao enviar');
     mostrarSucesso(protocolo);
   } catch(err){
-    console.error('EmailJS error:', err);
-
-    // fallback: mailto
-    const corpo = encodeURIComponent(
-      `SOLICITAÇÃO DE CANCELAMENTO\n`+
-      `Protocolo: ${protocolo}\n`+
-      `Nome: ${payload.nome}\n`+
-      `E-mail: ${payload.email}\n`+
-      `Telefone: ${payload.telefone}\n`+
-      `CPF/CNPJ: ${payload.cpf}\n`+
-      `Contrato: ${payload.contrato}\n`+
-      `Satisfação: ${payload.nota}\n`+
-      `Motivos: ${payload.motivos}\n`+
-      `Decisão: ${payload.decisao}\n`+
-      `Descrição: ${payload.descricao}\n`+
-      `Data/Hora: ${payload.data_hora}`
-    );
-    window.location.href =
-      `mailto:sac@vegasvigilancia.com.br`+
-      `?subject=Cancelamento%20${encodeURIComponent(protocolo)}`+
-      `&body=${corpo}`;
-
-    mostrarSucesso(protocolo);
+    alert('Erro ao enviar solicitação. Tente novamente.');
+    btn.disabled = false;
+    btn.innerHTML = '🚫 Solicitar Cancelamento';
   }
 }
 
@@ -916,7 +890,7 @@ function mostrarSucesso(protocolo){
 
 // ── ESPECIALISTA ────────────────────────────────────────────────
 function falarEspecialista(){
-  window.open('https://wa.me/55?text=Olá!%20Gostaria%20de%20falar%20com%20um%20especialista%20da%20Vegas%20Vigilância.','_blank');
+  window.open('https://wa.me/5524998235101?text=Olá! Gostaria de receber uma proposta personalizada da Vegas Vigilância.','_blank');
 }
 
 // init progress
