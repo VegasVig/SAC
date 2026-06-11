@@ -861,7 +861,7 @@ async function enviarCancelamento(){
   try {
     // Envia para Google Sheets
     const params = new URLSearchParams(payload);
-    await fetch(APPS_SCRIPT_URL, {
+    await fetch('https://script.google.com/macros/s/AKfycbwdu1u05Wr9CYFQnwsBmckTb-NV1HuvZKD9ZVZM8S_6p7PTZ_juGX5z9eoB8VSnncwx5w/exec', {
       method: 'POST',
       body: params,
       mode: 'no-cors'
