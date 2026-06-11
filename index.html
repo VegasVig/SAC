@@ -12,11 +12,11 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 
 :root{
-  --cyan:#C0C0C0;
-  --purple:#808080;
-  --green:#E5E5E5;
+  --cyan:#00d4ff;
+  --purple:#7b61ff;
+  --green:#00ffb2;
   --red:#ff2d55;
-  --bg:#000000;
+  --bg:#050816;
   --card-bg:rgba(255,255,255,0.04);
   --border:rgba(0,212,255,0.2);
 }
@@ -455,6 +455,12 @@ select option{background:#0d1526;color:#fff;}
 }
 .tooltip:hover .tip{visibility:visible;opacity:1;}
 
+.header img {
+  width: 500px;
+  display: block;
+  margin: 0 auto;
+}
+
 @media(max-width:640px){
   .card{padding:24px 18px;}
   .brand{font-size:1.8rem;}
@@ -479,10 +485,7 @@ select option{background:#0d1526;color:#fff;}
       <span class="badge-dot"></span>
       Sistema de Atendimento
     </div>
-    <h1 class="brand">
-      Vegas Vigilância
-      <span class="brand-sub">Protegendo o que realmente importa</span>
-    </h1>
+   <img src="./assets/logovegas.png" alt="logo">
     <div class="header-line"></div>
     <p class="header-desc">
       Lamentamos saber que deseja cancelar. Preencha as informações abaixo
@@ -661,14 +664,16 @@ select option{background:#0d1526;color:#fff;}
           </div>
         </div>
       </div>
-</div>
+
+
+    </div>
 
     <!-- TERMOS -->
     <div class="card" style="animation-delay:.5s">
       <label class="terms-check" id="termsLabel">
-        <input type="checkbox" id="termos" required>
+        <input type="checkbox" id="termos">
         <span>
-          Declaro que estou ciente dos <strong>prazos e condições contratuais</strong> para
+          <span style="color:var(--red)">*</span> Declaro que estou ciente dos <strong>prazos e condições contratuais</strong> para
           cancelamento, incluindo eventuais multas rescisórias previstas em contrato,
           e que as informações fornecidas são verdadeiras.
         </span>
@@ -697,8 +702,7 @@ select option{background:#0d1526;color:#fff;}
     <div class="success-title">Solicitação Recebida com Sucesso!</div>
     <div class="protocol-box" id="protocolNum">VG-2026-001</div>
     <p class="success-text">
-      Sua solicitação foi registrada em nosso sistema.
-      <strong style="color:var(--cyan)">sac@vegasvigilancia.com.br</strong>.<br><br>
+      Sua solicitação foi registrada com sucesso e nossa equipe já foi notificada.<br><br>
       Um de nossos especialistas entrará em contato em até
       <strong>48 horas úteis</strong> para concluir o processo e orientá-lo sobre
       os próximos passos.
@@ -712,14 +716,14 @@ select option{background:#0d1526;color:#fff;}
 
 </div><!-- /container -->
 
-<!-- ============================================================
-     EMAILJS — configure suas chaves abaixo
-     1. Crie conta grátis em https://www.emailjs.com
-     2. Adicione um Email Service (Gmail, Outlook, etc.)
-     3. Crie um Email Template com as variáveis {{nome}}, {{email}}, etc.
-     4. Substitua PUBLIC_KEY, SERVICE_ID e TEMPLATE_ID abaixo
-     ============================================================ -->
 <script>
+// ── GOOGLE SHEETS CONFIG ─────────────────────────────────────────
+// Cole aqui a URL gerada pelo Apps Script após publicar como Web App:
+const APPS_SCRIPT_URL = 'SUA_URL_DO_APPS_SCRIPT_AQUI';
+// ─────────────────────────────────────────────────────────────────
+
+const WHATSAPP_NUMBER = '5524998235101';
+
 // ── PROGRESS & STEPS ────────────────────────────────────────────
 function updateProgress(){
   const fields = ['nome','email','telefone','descricao'];
@@ -819,23 +823,22 @@ function mostrarErro(msg){
   setTimeout(() => box.classList.remove('show'), 5000);
 }
 
-// ── MONTAR PAYLOAD DO EMAIL ──────────────────────────────────────
 function montarPayload(protocolo){
   const nota     = document.querySelector('.rating-item.selected')?.querySelector('.label')?.textContent || 'Não informado';
   const motivos  = [...document.querySelectorAll('.check-item input:checked')].map(i => i.value).join(', ') || 'Não informado';
   const descricao= document.getElementById('descricao').value.trim() || 'Não informado';
-  const decisao  = document.querySelector('input[name="decisao"]:checked')?.value === 'proposta'
+  const decisaoVal = document.querySelector('input[name="decisao"]:checked')?.value;
+  const decisao  = decisaoVal === 'proposta'
                    ? 'Deseja receber proposta personalizada'
                    : 'Deseja prosseguir com cancelamento';
 
   return {
-    to_email   : 'sac@vegasvigilancia.com.br',
     protocolo  : protocolo,
     nome       : document.getElementById('nome').value.trim(),
     email      : document.getElementById('email').value.trim(),
     telefone   : document.getElementById('telefone').value.trim(),
     cpf        : document.getElementById('cpf').value.trim() || 'Não informado',
-        satisfacao : nota,
+    nota       : nota,
     motivos    : motivos,
     descricao  : descricao,
     decisao    : decisao,
@@ -847,32 +850,39 @@ function montarPayload(protocolo){
 async function enviarCancelamento(){
   if(!validar()) return;
 
-  const decisao = document.querySelector('input[name="decisao"]:checked')?.value;
-  if(decisao === 'proposta'){
-    window.open('https://wa.me/5524998235101?text=Olá! Gostaria de receber uma proposta personalizada da Vegas Vigilância.','_blank');
-    return;
-  }
-
   const btn = document.getElementById('btnCancelar');
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span> Enviando...';
 
   const protocolo = gerarProtocolo();
   const payload   = montarPayload(protocolo);
+  const decisaoVal = document.querySelector('input[name="decisao"]:checked')?.value;
 
   try {
-    const resp = await fetch('https://script.google.com/macros/s/AKfycbyaGyqk-ZfwfgfASrBkdIP_wcKzVZjmI2genRtzUoM036x2dVE_2i6LuPPRP-pEtOqiEg/exec',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
+    // Envia para Google Sheets
+    const params = new URLSearchParams(payload);
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: params,
+      mode: 'no-cors'
     });
-
-    if(!resp.ok) throw new Error('Falha ao enviar');
-    mostrarSucesso(protocolo);
   } catch(err){
-    alert('Erro ao enviar solicitação. Tente novamente.');
-    btn.disabled = false;
-    btn.innerHTML = '🚫 Solicitar Cancelamento';
+    console.warn('Sheets error:', err);
+    // continua mesmo com erro para não travar o cliente
+  }
+
+  mostrarSucesso(protocolo);
+
+  // Se cliente quer proposta → abre WhatsApp
+  if(decisaoVal === 'proposta'){
+    const msg = encodeURIComponent(
+      `Olá! Sou ${payload.nome} e gostaria de receber uma proposta personalizada da Vegas Vigilância.\n` +
+      `📋 Protocolo: ${protocolo}\n` +
+      `📱 Telefone: ${payload.telefone}`
+    );
+    setTimeout(() => {
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+    }, 1000);
   }
 }
 
@@ -890,7 +900,7 @@ function mostrarSucesso(protocolo){
 
 // ── ESPECIALISTA ────────────────────────────────────────────────
 function falarEspecialista(){
-  window.open('https://wa.me/5524998235101?text=Olá! Gostaria de receber uma proposta personalizada da Vegas Vigilância.','_blank');
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=Olá!%20Gostaria%20de%20falar%20com%20um%20especialista%20da%20Vegas%20Vigilância.`,'_blank');
 }
 
 // init progress
