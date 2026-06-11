@@ -458,7 +458,6 @@ select option{background:#0d1526;color:#fff;}
 .header img {
   width: 100%;
   max-width: 500px;
-  height: auto;
   display: block;
   margin: 0 auto;
 }
@@ -712,7 +711,7 @@ select option{background:#0d1526;color:#fff;}
   </div>
 
   <div class="footer">
-    © 2026 Vegas Vigilância &nbsp;•&nbsp; CNPJ: /0001-04 &nbsp;•&nbsp;
+    © 2026 Vegas Vigilância &nbsp;•&nbsp; CNPJ: 29.890.721/0001-04 &nbsp;•&nbsp;
     sac@vegasvigilancia.com.br &nbsp;•&nbsp; Todos os direitos reservados.
   </div>
 
@@ -721,7 +720,7 @@ select option{background:#0d1526;color:#fff;}
 <script>
 // ── GOOGLE SHEETS CONFIG ─────────────────────────────────────────
 // Cole aqui a URL gerada pelo Apps Script após publicar como Web App:
-const APPS_SCRIPT_URL = 'SUA_URL_DO_APPS_SCRIPT_AQUI';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzGtOiik1fcOZ3GFdZ6YDiaujXpEDX1F0Q-yCQirJ2l3gCCs-HTaGae_B2Us6wy7tgadw/exec';
 // ─────────────────────────────────────────────────────────────────
 
 const WHATSAPP_NUMBER = '5524998235101';
@@ -863,7 +862,7 @@ async function enviarCancelamento(){
   try {
     // Envia para Google Sheets
     const params = new URLSearchParams(payload);
-    await fetch('https://script.google.com/macros/s/AKfycbzGtOiik1fcOZ3GFdZ6YDiaujXpEDX1F0Q-yCQirJ2l3gCCs-HTaGae_B2Us6wy7tgadw/exec', {
+    await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       body: params,
       mode: 'no-cors'
