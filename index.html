@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cancelamento de Contrato | Vegas Vigilância</title>
+<title>Cancelamento Vegas Vigilância</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 
 <style>
@@ -906,106 +907,196 @@ function mostrarSucesso(protocolo){
 }
 
 // ── GERAR PDF (comprovante) ─────────────────────────────────────
-let _lastPayload = null; // guarda dados para o PDF
+let _lastPayload = null;
 
 function gerarPDF(){
   const p = _lastPayload;
   if(!p) return;
 
-  const decisaoIcone = p.decisao.includes('proposta') ? '✅ Quer receber proposta' : '❌ Prosseguir com cancelamento';
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+  const W = 210, ML = 16, MR = 194;
 
-  const html = `<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<title>Comprovante ${p.protocolo}</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap');
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Rajdhani',Arial,sans-serif;background:#fff;color:#111;padding:40px;}
-  .header{display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #050816;padding-bottom:18px;margin-bottom:28px;}
-  .logo-text{font-size:26px;font-weight:700;letter-spacing:3px;color:#050816;}
-  .logo-sub{font-size:11px;letter-spacing:4px;color:#555;margin-top:3px;}
-  .badge{background:#050816;color:#00d4ff;padding:6px 16px;border-radius:6px;font-size:11px;letter-spacing:2px;text-align:right;}
-  .badge span{display:block;font-size:18px;font-weight:700;color:#fff;margin-top:2px;letter-spacing:3px;}
-  h2{font-size:15px;letter-spacing:2px;text-transform:uppercase;color:#050816;margin-bottom:16px;padding-bottom:6px;border-bottom:1px solid #ddd;}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
-  .field{background:#f7f8fa;border-left:3px solid #00d4ff;padding:10px 14px;border-radius:4px;}
-  .field-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#888;margin-bottom:3px;}
-  .field-value{font-size:14px;font-weight:600;color:#111;}
-  .full{grid-column:1/-1;}
-  .decisao{background:#e8faf4;border-left:3px solid #00b87c;padding:12px 16px;border-radius:4px;font-size:14px;font-weight:600;margin-bottom:24px;}
-  .footer{margin-top:36px;border-top:1px solid #ddd;padding-top:16px;font-size:11px;color:#888;text-align:center;line-height:1.8;}
-  .stamp{display:inline-block;border:2px solid #00b87c;color:#00b87c;padding:6px 18px;border-radius:6px;font-size:12px;font-weight:700;letter-spacing:2px;margin-bottom:16px;}
-  @media print{body{padding:20px;}button{display:none!important;}}
-</style>
-</head>
-<body>
-<div class="header">
-  <div>
-    <div class="logo-text">VEGAS</div>
-    <div class="logo-sub">VIGILÂNCIA E SEGURANÇA</div>
-  </div>
-  <div class="badge">
-    PROTOCOLO
-    <span>${p.protocolo}</span>
-  </div>
-</div>
+  // ── helpers ──────────────────────────────────────────────────
+  const hex = (h) => {
+    const r = parseInt(h.slice(1,3),16);
+    const g = parseInt(h.slice(3,5),16);
+    const b = parseInt(h.slice(5,7),16);
+    return [r,g,b];
+  };
+  const setFill  = (h) => doc.setFillColor(...hex(h));
+  const setColor = (h) => doc.setTextColor(...hex(h));
+  const setDraw  = (h) => doc.setDrawColor(...hex(h));
 
-<div class="stamp">✅ SOLICITAÇÃO REGISTRADA</div>
+  // ── HEADER BACKGROUND ────────────────────────────────────────
+  setFill('#050816');
+  doc.rect(0, 0, W, 42, 'F');
 
-<h2>📋 Dados do Solicitante</h2>
-<div class="grid">
-  <div class="field">
-    <div class="field-label">Nome Completo</div>
-    <div class="field-value">${p.nome}</div>
-  </div>
-  <div class="field">
-    <div class="field-label">CPF / CNPJ</div>
-    <div class="field-value">${p.cpf}</div>
-  </div>
-  <div class="field">
-    <div class="field-label">Telefone</div>
-    <div class="field-value">${p.telefone}</div>
-  </div>
-  <div class="field">
-    <div class="field-label">E-mail</div>
-    <div class="field-value">${p.email}</div>
-  </div>
-  <div class="field">
-    <div class="field-label">Data / Hora</div>
-    <div class="field-value">${p.data_hora}</div>
-  </div>
-  <div class="field">
-    <div class="field-label">Grau de Satisfação</div>
-    <div class="field-value">${p.nota}</div>
-  </div>
-  <div class="field full">
-    <div class="field-label">Motivos do Cancelamento</div>
-    <div class="field-value">${p.motivos}</div>
-  </div>
-  <div class="field full">
-    <div class="field-label">Descrição</div>
-    <div class="field-value">${p.descricao}</div>
-  </div>
-</div>
+  // gradiente cyan linha decorativa
+  setFill('#00d4ff');
+  doc.rect(0, 41, W, 1.2, 'F');
 
-<h2>⚡ Decisão do Cliente</h2>
-<div class="decisao">${decisaoIcone}</div>
+  // VEGAS wordmark
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(26);
+  setColor('#00d4ff');
+  doc.text('VEGAS', ML, 20);
 
-<div class="footer">
-  © 2026 Vegas Vigilância &nbsp;•&nbsp; CNPJ: 00.000.000/0001-00 &nbsp;•&nbsp; sac@vegasvigilancia.com.br<br>
-  Nossa equipe entrará em contato em até <strong>48 horas úteis</strong>.<br>
-  Guarde este comprovante com o número de protocolo: <strong>${p.protocolo}</strong>
-</div>
-</body>
-</html>`;
+  doc.setFontSize(8);
+  doc.setFont('helvetica','normal');
+  setColor('#7b61ff');
+  doc.setCharSpace(3);
+  doc.text('VIGILANCIA E SEGURANCA', ML, 27);
+  doc.setCharSpace(0);
 
-  const win = window.open('', '_blank', 'width=800,height=900');
-  win.document.write(html);
-  win.document.close();
-  win.focus();
-  setTimeout(() => win.print(), 600);
+  doc.setFontSize(7);
+  setColor('#aabbcc');
+  doc.text('Sistema de Cancelamento de Contrato', ML, 33);
+
+  // PROTOCOLO badge (direita)
+  setFill('#00d4ff');
+  doc.roundedRect(130, 8, 64, 26, 3, 3, 'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(7);
+  setColor('#050816');
+  doc.setCharSpace(2);
+  doc.text('PROTOCOLO', 162, 16, {align:'center'});
+  doc.setCharSpace(0);
+  doc.setFontSize(13);
+  doc.text(p.protocolo, 162, 25, {align:'center'});
+
+  // ── STAMP ────────────────────────────────────────────────────
+  let y = 52;
+  setFill('#00ffb2');
+  doc.roundedRect(ML, y, 58, 8, 2, 2, 'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8);
+  setColor('#050816');
+  doc.text('SOLICITACAO REGISTRADA', ML+29, y+5.2, {align:'center'});
+
+  // data/hora alinhada direita
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8);
+  setColor('#7b8a9a');
+  doc.text(p.data_hora, MR, y+5.2, {align:'right'});
+
+  // ── SECTION helper ───────────────────────────────────────────
+  y += 14;
+  function section(title){
+    setFill('#0d1a2e');
+    doc.rect(ML, y, MR-ML, 7, 'F');
+    setFill('#00d4ff');
+    doc.rect(ML, y, 2.5, 7, 'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8);
+    setColor('#00d4ff');
+    doc.setCharSpace(1.5);
+    doc.text(title, ML+6, y+4.8);
+    doc.setCharSpace(0);
+    y += 10;
+  }
+
+  // ── FIELD helper (2 colunas) ──────────────────────────────────
+  function field2(label1, val1, label2, val2){
+    const half = (MR-ML-4)/2;
+    _field(ML, y, half, label1, val1);
+    _field(ML+half+4, y, half, label2, val2);
+    y += 14;
+  }
+  function field1(label, val){
+    _field(ML, y, MR-ML, label, val);
+    y += 14;
+  }
+  function _field(x, fy, w, label, val){
+    setFill('#f0f4f8');
+    doc.roundedRect(x, fy, w, 12, 1.5, 1.5, 'F');
+    setFill('#00d4ff');
+    doc.rect(x, fy, 2, 12, 'F');
+    doc.setFont('helvetica','normal');
+    doc.setFontSize(6.5);
+    setColor('#7b8a9a');
+    doc.setCharSpace(1);
+    doc.text(label.toUpperCase(), x+5, fy+4.5);
+    doc.setCharSpace(0);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9);
+    setColor('#111827');
+    const safe = String(val||'Nao informado').replace(/[^\x00-\x7E]/g, c => {
+      const map={'ã':'a','â':'a','á':'a','à':'a','ä':'a','Ã':'A','Â':'A','Á':'A',
+                 'é':'e','ê':'e','è':'e','É':'E','Ê':'E','í':'i','î':'i','Í':'I',
+                 'ó':'o','ô':'o','õ':'o','ò':'o','Ó':'O','Ô':'O','Õ':'O',
+                 'ú':'u','û':'u','ü':'u','Ú':'U','ç':'c','Ç':'C','ñ':'n'};
+      return map[c]||c;
+    });
+    doc.text(safe, x+5, fy+9.5, {maxWidth: w-8});
+  }
+
+  // ── DADOS DO SOLICITANTE ──────────────────────────────────────
+  section('DADOS DO SOLICITANTE');
+  field2('Nome Completo', p.nome, 'CPF / CNPJ', p.cpf);
+  field2('Telefone', p.telefone, 'E-mail', p.email);
+  field2('Grau de Satisfacao', p.nota, 'Data / Hora', p.data_hora);
+
+  // ── MOTIVOS ───────────────────────────────────────────────────
+  section('MOTIVOS DO CANCELAMENTO');
+  field1('Motivos Selecionados', p.motivos);
+
+  // descricao (campo alto)
+  setFill('#f0f4f8');
+  doc.roundedRect(ML, y, MR-ML, 20, 1.5, 1.5, 'F');
+  setFill('#00d4ff');
+  doc.rect(ML, y, 2, 20, 'F');
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(6.5);
+  setColor('#7b8a9a');
+  doc.setCharSpace(1);
+  doc.text('DESCRICAO', ML+5, y+4.5);
+  doc.setCharSpace(0);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8.5);
+  setColor('#111827');
+  const descSafe = (p.descricao||'Nao informado').replace(/[^\x00-\x7E]/g, c => {
+    const map={'ã':'a','â':'a','á':'a','à':'a','Ã':'A','é':'e','ê':'e','É':'E',
+               'Ê':'E','í':'i','Í':'I','ó':'o','ô':'o','õ':'o','Ó':'O','Ô':'O',
+               'Õ':'O','ú':'u','Ú':'U','ç':'c','Ç':'C'};
+    return map[c]||c;
+  });
+  doc.text(descSafe, ML+5, y+10, {maxWidth: MR-ML-8});
+  y += 24;
+
+  // ── DECISÃO ───────────────────────────────────────────────────
+  section('DECISAO DO CLIENTE');
+  const isProposta = p.decisao.includes('proposta');
+  setFill(isProposta ? '#e6fff5' : '#fff0f3');
+  doc.roundedRect(ML, y, MR-ML, 12, 2, 2, 'F');
+  setFill(isProposta ? '#00ffb2' : '#ff2d55');
+  doc.rect(ML, y, 3, 12, 'F');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  setColor(isProposta ? '#006644' : '#aa0022');
+  doc.text(
+    isProposta ? 'Deseja receber proposta personalizada' : 'Deseja prosseguir com o cancelamento',
+    ML+7, y+7.5
+  );
+  y += 18;
+
+  // ── FOOTER ────────────────────────────────────────────────────
+  const pageH = 297;
+  setFill('#050816');
+  doc.rect(0, pageH-22, W, 22, 'F');
+  setFill('#00d4ff');
+  doc.rect(0, pageH-22, W, 0.8, 'F');
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  setColor('#7b8a9a');
+  doc.text('© 2026 Vegas Vigilancia  •  CNPJ: 00.000.000/0001-00  •  sac@vegasvigilancia.com.br', W/2, pageH-14, {align:'center'});
+  doc.setFontSize(7.5);
+  setColor('#aabbcc');
+  doc.text('Nossa equipe entrara em contato em ate 48 horas uteis. Protocolo: '+p.protocolo, W/2, pageH-8, {align:'center'});
+
+  // ── SAVE ──────────────────────────────────────────────────────
+  doc.save('Comprovante-Vegas-'+p.protocolo+'.pdf');
 }
 
 // ── ESPECIALISTA ────────────────────────────────────────────────
