@@ -684,9 +684,6 @@ select option{background:#0d1526;color:#fff;}
 
     <!-- AÇÕES -->
     <div class="btns">
-      <button class="btn btn-primary" onclick="falarEspecialista()">
-        💬 Falar com Especialista
-      </button>
       <button class="btn btn-danger" id="btnCancelar" onclick="enviarCancelamento()">
         🚫 Solicitar Cancelamento
       </button>
@@ -726,7 +723,7 @@ select option{background:#0d1526;color:#fff;}
 <script>
 // ── GOOGLE SHEETS CONFIG ─────────────────────────────────────────
 // Cole aqui a URL gerada pelo Apps Script após publicar como Web App:
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwD6lnaGydwBPuBEcuj1tsx1U0jfO3IQkAypei3_9T8OGbGYW0iovtp2CZsO29McFagjA/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxB604I37c_mkwSnoIrb0OjSBvyBx0tc3WXcA7TaqWlHe9U6buWkGJHej4I6vs5-Z3mdw/exec';
 // ─────────────────────────────────────────────────────────────────
 
 const WHATSAPP_NUMBER = '5524998235101';
@@ -850,6 +847,7 @@ function montarPayload(protocolo){
     descricao  : descricao,
     decisao    : decisao,
     data_hora  : new Date().toLocaleString('pt-BR'),
+    enviar_email : 'sim',
   };
 }
 
@@ -1150,11 +1148,6 @@ async function gerarPDFBtn(){
   try { await gerarPDF(); } catch(e){ console.error(e); }
   btn.disabled = false;
   btn.innerHTML = '📄 Baixar Comprovante PDF';
-}
-
-// ── ESPECIALISTA ────────────────────────────────────────────────
-function falarEspecialista(){
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=Olá!%20Gostaria%20de%20falar%20com%20um%20especialista%20da%20Vegas%20Vigilância.`,'_blank');
 }
 
 // init progress
