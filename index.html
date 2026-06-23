@@ -1018,7 +1018,7 @@ async function gerarPDF(){
   // Chip "REGISTRADO"
   doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
   doc.setCharSpace(1.5);
-  const stampTxt = 'SOLICITACAO REGISTRADA';
+  const stampTxt = 'REGISTRADO';
   const chipW = doc.getTextWidth(stampTxt) + 14;
   doc.setCharSpace(0);
 
@@ -1096,7 +1096,7 @@ async function gerarPDF(){
   field1('Motivos Selecionados', p.motivos);
 
   // Descrição — campo alto para texto longo
-  const descLines = doc.splitTextToSize(sanitize(p.descricao||'Nao informado'), MR-ML-9);
+  const descLines = doc.splitTextToSize(sanitize(p.descricao||''), MR-ML-9);
   const descH = Math.max(18, descLines.length * 4.5 + 7);
   _field(ML, y, MR-ML, 'DESCRICAO DO CLIENTE', '', descH);
   // texto com wrap correto (uma única vez)
