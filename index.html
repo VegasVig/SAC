@@ -1016,17 +1016,23 @@ async function gerarPDF(){
   let y = 54;
 
   // Chip "REGISTRADO"
+  doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
+  doc.setCharSpace(1.5);
+  const stampTxt = 'SOLICITACAO REGISTRADA';
+  const chipW = doc.getTextWidth(stampTxt) + 14;
+  doc.setCharSpace(0);
+
   F(C.cardAlt);
   D(C.accentDim);
   doc.setLineWidth(0.3);
-  doc.roundedRect(ML, y, 56, 7, 1.5, 1.5, 'FD');
+  doc.roundedRect(ML, y, chipW, 7, 1.5, 1.5, 'FD');
   // Pontinho esquerdo
   F(C.accent);
   doc.circle(ML+5, y+3.5, 1.2, 'F');
 
   doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
   T(C.accent); doc.setCharSpace(1.5);
-  doc.text('SOLICITACAO REGISTRADA', ML+9, y+4.6);
+  doc.text(stampTxt, ML+9, y+4.6);
   doc.setCharSpace(0);
 
   y += 12;
@@ -1088,13 +1094,13 @@ async function gerarPDF(){
   field1('Motivos Selecionados', p.motivos);
 
   // Descrição — campo alto para texto longo
-  const descLines = doc.splitTextToSize(sanitize(p.descricao||'Nao informado'), MR-ML-8);
+  const descLines = doc.splitTextToSize(sanitize(p.descricao||'Nao informado'), MR-ML-9);
   const descH = Math.max(18, descLines.length * 4.5 + 7);
-  _field(ML, y, MR-ML, 'DESCRICAO DO CLIENTE', p.descricao||'', descH);
-  // reescreve o texto com wrap correto
+  _field(ML, y, MR-ML, 'DESCRICAO DO CLIENTE', '', descH);
+  // texto com wrap correto (uma única vez)
   doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
   T(C.white);
-  doc.text(descLines, ML+4.5, y+9.5, {maxWidth: MR-ML-7});
+  doc.text(descLines, ML+4.5, y+9.5);
   y += descH + 2;
 
   // ── DECISÃO ───────────────────────────────────────────────────
