@@ -1018,8 +1018,8 @@ async function gerarPDF(){
   // Chip "REGISTRADO"
   doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
   doc.setCharSpace(1.5);
-  const stampTxt = 'REGISTRADO';
-  const chipW = doc.getTextWidth(stampTxt) + 14;
+  const stampTxt = 'SOLICITAÇÃO REGISTRADA';
+  const chipW = doc.getTextWidth(stampTxt) + 26;
   doc.setCharSpace(0);
 
   F(C.cardAlt);
