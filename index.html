@@ -723,7 +723,7 @@ select option{background:#0d1526;color:#fff;}
 <script>
 // ── GOOGLE SHEETS CONFIG ─────────────────────────────────────────
 // Cole aqui a URL gerada pelo Apps Script após publicar como Web App:
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwMHdPESxdcswEPzI01iec2lj5NuEhWI2gVw1i5fnx80FUjWqejsTwnfiSg1IOusAPDEQ/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzvRJd10tvN6MDt8shFtmexccqdZI4IwWj3usvs9RJV0FuEGhSoKdKG7yofetC2wgRn7w/exec';
 // ─────────────────────────────────────────────────────────────────
 
 const WHATSAPP_NUMBER = '5524998235101';
@@ -1067,9 +1067,11 @@ async function gerarPDF(){
     doc.text(label.toUpperCase(), x+4.5, fy+4);
     doc.setCharSpace(0);
 
-    doc.setFont('helvetica','bold'); doc.setFontSize(9);
-    T(C.white);
-    doc.text(sanitize(val), x+4.5, fy+(tall ? 10 : 9.2), {maxWidth: w-7});
+    if (val !== '' && val != null) {
+      doc.setFont('helvetica','bold'); doc.setFontSize(9);
+      T(C.white);
+      doc.text(sanitize(val), x+4.5, fy+(tall ? 10 : 9.2), {maxWidth: w-7});
+    }
   }
 
   function field2(l1, v1, l2, v2){
