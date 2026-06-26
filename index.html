@@ -462,6 +462,61 @@ select option{background:#0d1526;color:#fff;}
   display: block;
   margin: 0 auto;
 }
+/* ── NPS ───────────────────────────────────────── */
+
+.nps-grid{
+    display:grid;
+    grid-template-columns:repeat(11,1fr);
+    gap:8px;
+    margin-top:20px;
+}
+
+.nps-grid label{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:55px;
+    border:1px solid rgba(0,212,255,.15);
+    border-radius:12px;
+    background:rgba(255,255,255,.04);
+    color:#fff;
+    font-weight:700;
+    cursor:pointer;
+    transition:.25s;
+}
+
+.nps-grid input{
+    display:none;
+}
+
+.nps-grid label:hover{
+    border-color:var(--cyan);
+    background:rgba(0,212,255,.10);
+    transform:translateY(-2px);
+}
+
+.nps-grid label.selected{
+    background:linear-gradient(135deg,var(--cyan),var(--purple));
+    color:#000;
+    border-color:var(--cyan);
+    box-shadow:0 0 20px rgba(0,212,255,.35);
+}
+
+.nps-legenda{
+    display:flex;
+    justify-content:space-between;
+    margin-top:12px;
+    font-size:.85rem;
+    color:#9aa7b8;
+}
+
+@media(max-width:768px){
+
+.nps-grid{
+grid-template-columns:repeat(6,1fr);
+}
+
+}
 
 @media(max-width:640px){
   .card{padding:24px 18px;}
@@ -622,7 +677,31 @@ select option{background:#0d1526;color:#fff;}
         </label>
       </div>
     </div>
+<div class="card">
+  <div class="card-header">
+    <div class="card-icon">💙</div>
+    <div>
+      <div class="card-title">Recomendação</div>
+      <div class="card-desc">
+        Em uma escala de 0 a 10, o quanto você indicaria a Vegas para um amigo ou familiar?
+      </div>
+    </div>
+  </div>
 
+  <div class="nps-grid">
+    <label><input type="radio" name="nps" value="0">0</label>
+    <label><input type="radio" name="nps" value="1">1</label>
+    <label><input type="radio" name="nps" value="2">2</label>
+    <label><input type="radio" name="nps" value="3">3</label>
+    <label><input type="radio" name="nps" value="4">4</label>
+    <label><input type="radio" name="nps" value="5">5</label>
+    <label><input type="radio" name="nps" value="6">6</label>
+    <label><input type="radio" name="nps" value="7">7</label>
+    <label><input type="radio" name="nps" value="8">8</label>
+    <label><input type="radio" name="nps" value="9">9</label>
+    <label><input type="radio" name="nps" value="10">10</label>
+  </div>
+</div>
     <!-- CARD 4: DADOS -->
     <div class="card" style="animation-delay:.4s">
       <div class="card-header">
@@ -723,10 +802,23 @@ select option{background:#0d1526;color:#fff;}
 <script>
 // ── GOOGLE SHEETS CONFIG ─────────────────────────────────────────
 // Cole aqui a URL gerada pelo Apps Script após publicar como Web App:
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOjhCCZeek7hBFAOzxo2VtWAaRm4gfDs8GdNooqViBPc9g-td2Kot6PkrRpG2EAATz6w/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/library/d/1X9xt7iGbGOVA6FU4K1NqL88zc6t0pMBeIQB4kq55-AOyNNxfpi8ZK2zw/17';
 // ─────────────────────────────────────────────────────────────────
 
 const WHATSAPP_NUMBER = '5524998235101';
+
+document.querySelectorAll(".nps-grid label").forEach(label=>{
+
+    label.addEventListener("click",()=>{
+
+        document.querySelectorAll(".nps-grid label")
+            .forEach(l=>l.classList.remove("selected"));
+
+        label.classList.add("selected");
+
+    });
+
+});
 
 // ── PROGRESS & STEPS ────────────────────────────────────────────
 function updateProgress(){
@@ -848,6 +940,7 @@ function montarPayload(protocolo){
     decisao    : decisao,
     data_hora  : new Date().toLocaleString('pt-BR'),
     enviar_email : 'sim',
+    nps: document.querySelector('input[name="nps"]:checked')?.value || '',
   };
 }
 
